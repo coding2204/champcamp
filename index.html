@@ -1704,13 +1704,29 @@ function initCustomCursor() {
   });
 }
 
-function goPage(id) {
+// Pages that map to their own clean URL (coach-profile is a dynamic sub-view and is not routed)
+var ROUTABLE_PAGES = ['home', 'about', 'coaches', 'details', 'payment', 'apply'];
+
+function pageFromPath() {
+  var seg = window.location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+  return ROUTABLE_PAGES.indexOf(seg) !== -1 ? seg : 'home';
+}
+
+function goPage(id, fromHistory) {
   var pages = document.querySelectorAll('.page');
   for (var i = 0; i < pages.length; i++) {
     pages[i].classList.remove('active');
   }
   var target = document.getElementById('page-' + id);
   if (target) target.classList.add('active');
+
+  // Keep the browser URL in sync with the visible page (home lives at "/")
+  if (!fromHistory && ROUTABLE_PAGES.indexOf(id) !== -1) {
+    var path = (id === 'home') ? '/' : '/' + id;
+    if (window.location.pathname !== path) {
+      history.pushState({ page: id }, '', path);
+    }
+  }
 
   var btns = document.querySelectorAll('.nav-links button');
   for (var j = 0; j < btns.length; j++) {
@@ -1780,12 +1796,22 @@ function initScrollMotion() {
 }
 
 renderCoachGrid();
-initHeroTypewriter();
 initScrollMotion();
 
-// Trigger fades on initial home page load
+// Show the page that matches the current URL (e.g. /about, /coaches), defaulting to home
+var initialPage = pageFromPath();
+goPage(initialPage, true);
+// Normalize the history entry so Back works from a deep link
+history.replaceState({ page: initialPage }, '', initialPage === 'home' ? '/' : '/' + initialPage);
+
+// Back/forward buttons swap pages without reloading
+window.addEventListener('popstate', function() {
+  goPage(pageFromPath(), true);
+});
+
+// Trigger fades on the initially shown page
 setTimeout(function() {
-  var fades = document.querySelectorAll('#page-home .fade');
+  var fades = document.querySelectorAll('#page-' + initialPage + ' .fade');
   for (var i = 0; i < fades.length; i++) {
     fades[i].classList.add('in');
   }
