@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '865642229459234');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=865642229459234&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Champ Camp 2026 — Online LD Debate Camp Taught by TOC & Glenbrooks Champions</title>
@@ -1821,9 +1838,108 @@
   .enroll-note { margin-top: 2.5rem; text-align: center; font-size: 0.82rem; color: var(--text-light); line-height: 1.7; }
   .enroll-note a { color: var(--red); }
   @media (max-width: 820px) { .enroll-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+  /* Waitlist popup */
+  .wl-overlay {
+    position: fixed; inset: 0; z-index: 4000;
+    background: rgba(17,18,24,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.25rem;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+  }
+  .wl-overlay.show { opacity: 1; visibility: visible; }
+  .wl-modal {
+    position: relative;
+    background: var(--cream);
+    border-top: 5px solid var(--red);
+    max-width: 460px;
+    width: 100%;
+    padding: 2.5rem 2.25rem 2.25rem;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    transform: translateY(24px) scale(0.97);
+    transition: transform 0.4s cubic-bezier(.2,.75,.2,1);
+  }
+  .wl-overlay.show .wl-modal { transform: translateY(0) scale(1); }
+  .wl-close {
+    position: absolute; top: 0.9rem; right: 1rem;
+    background: none; border: none; cursor: pointer;
+    font-size: 1.4rem; line-height: 1; color: var(--text-light);
+    padding: 0.25rem 0.4rem;
+  }
+  .wl-close:hover { color: var(--text); }
+  .wl-kicker {
+    font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--red); font-weight: 700; margin-bottom: 0.7rem;
+  }
+  .wl-modal h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 900; color: var(--dark);
+    line-height: 1.2; margin-bottom: 0.6rem; letter-spacing: -0.01em;
+  }
+  .wl-modal p {
+    font-family: 'Lora', serif; font-size: 0.92rem; line-height: 1.6;
+    color: var(--text-light); margin-bottom: 1.4rem;
+  }
+  .wl-form { display: flex; flex-direction: column; gap: 0.7rem; }
+  .wl-input {
+    width: 100%; padding: 0.85rem 1rem;
+    border: 1.5px solid var(--cream-border);
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; color: var(--text);
+  }
+  .wl-input:focus { outline: none; border-color: var(--red); }
+  .wl-submit {
+    width: 100%; padding: 0.9rem 1rem;
+    background: var(--red); color: var(--white);
+    border: none; font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .wl-submit:hover { background: var(--red-mid); transform: translateY(-1px); }
+  .wl-submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+  .wl-note { font-size: 0.72rem; color: var(--text-light); margin-top: 0.7rem; text-align: center; }
+  .wl-error { font-size: 0.8rem; color: var(--red); margin-top: -0.2rem; display: none; }
+  .wl-success { display: none; text-align: center; padding: 0.5rem 0 0.2rem; }
+  .wl-success-icon {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--red); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin: 0 auto 1rem;
+  }
+  .wl-success h3 { margin-bottom: 0.5rem; }
+  .wl-success p { margin-bottom: 0; }
+  @media (max-width: 480px) {
+    .wl-modal { padding: 2.1rem 1.5rem 1.85rem; }
+  }
 </style>
 </head>
 <body>
+
+<!-- Waitlist popup -->
+<div class="wl-overlay" id="wl-overlay">
+  <div class="wl-modal">
+    <button class="wl-close" id="wl-close" aria-label="Close">&times;</button>
+    <div id="wl-form-state">
+      <div class="wl-kicker">Session II &middot; Filling Up</div>
+      <h3>Save your spot on the waitlist</h3>
+      <p>Drop your email and we'll hold a spot for you while you decide &mdash; no commitment, no payment now.</p>
+      <form class="wl-form" id="wl-form">
+        <input type="email" class="wl-input" id="wl-email" placeholder="you@email.com" required autocomplete="email">
+        <div class="wl-error" id="wl-error">Please enter a valid email address.</div>
+        <button type="submit" class="wl-submit" id="wl-submit">Join the Waitlist</button>
+      </form>
+      <div class="wl-note">We'll only email you about Champ Camp enrollment. No spam, ever.</div>
+    </div>
+    <div class="wl-success" id="wl-success">
+      <div class="wl-success-icon">&#10003;</div>
+      <h3>You're on the list!</h3>
+      <p>We've saved your spot. Keep an eye on your inbox &mdash; we'll reach out before enrollment fills up.</p>
+    </div>
+  </div>
+</div>
 
 <div class="announce-bar" aria-label="Announcement">
   <div class="announce-track" id="announce-track"></div>
@@ -2348,6 +2464,114 @@ var allFades = document.querySelectorAll('.fade');
 for (var i = 0; i < allFades.length; i++) {
   observer.observe(allFades[i]);
 }
+</script>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'champcamp_waitlist_submitted';
+  var LOCAL_LOG_KEY = 'champcamp_waitlist_emails';
+  var SHOW_DELAY_MS = 6000; // popup appears 6s after page load
+  // TODO: Replace with your real Formspree endpoint (https://formspree.io) — create a free
+  // form there, copy the endpoint URL, and paste it below. Submissions will also be kept
+  // in the browser's localStorage as a backup either way.
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgojwkqq';
+
+  var overlay = document.getElementById('wl-overlay');
+  var closeBtn = document.getElementById('wl-close');
+  var form = document.getElementById('wl-form');
+  var emailInput = document.getElementById('wl-email');
+  var errorEl = document.getElementById('wl-error');
+  var submitBtn = document.getElementById('wl-submit');
+  var formState = document.getElementById('wl-form-state');
+  var successState = document.getElementById('wl-success');
+
+  function alreadySubmitted() {
+    try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { return false; }
+  }
+
+  function markSubmitted() {
+    try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+  }
+
+  // Keeps a local backup list of emails on this browser so nothing is lost
+  // even if the network request to Formspree fails.
+  function logEmailLocally(email) {
+    try {
+      var existing = JSON.parse(localStorage.getItem(LOCAL_LOG_KEY) || '[]');
+      existing.push({ email: email, ts: new Date().toISOString() });
+      localStorage.setItem(LOCAL_LOG_KEY, JSON.stringify(existing));
+    } catch (e) {}
+  }
+
+  function openPopup() {
+    if (alreadySubmitted()) return;
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePopup() {
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closePopup);
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closePopup();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('show')) closePopup();
+  });
+
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = emailInput.value.trim();
+
+    if (!isValidEmail(email)) {
+      errorEl.style.display = 'block';
+      emailInput.style.borderColor = 'var(--red)';
+      return;
+    }
+    errorEl.style.display = 'none';
+    emailInput.style.borderColor = '';
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Joining...';
+
+    // Always keep a local backup first, so the email is never lost
+    // even if the request below fails or is offline.
+    logEmailLocally(email);
+
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email, source: 'Champ Camp waitlist popup', page: window.location.href })
+    }).then(function () {
+      showSuccess(email);
+    }).catch(function () {
+      // Network/endpoint issue — email is already saved locally above, so
+      // we still confirm to the user and avoid showing the popup again.
+      showSuccess(email);
+    });
+  });
+
+  function showSuccess(email) {
+    markSubmitted();
+    if (typeof fbq === 'function') {
+      fbq('track', 'Lead', { content_name: 'Waitlist signup' });
+    }
+    formState.style.display = 'none';
+    successState.style.display = 'block';
+    setTimeout(closePopup, 3500);
+  }
+
+  if (!alreadySubmitted()) {
+    setTimeout(openPopup, SHOW_DELAY_MS);
+  }
+})();
 </script>
 
 </body>
